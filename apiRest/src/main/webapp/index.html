@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Imóveis</title>
+    <script src="https://unpkg.com/vue@2.7.7/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+ 
+<body>
+ 
+    <div id="app">
+        <div>
+        									
+            ID do Imóvel: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="id" /><br /><br/>
+            Titulo: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem=""v-model="titulo" /><br /><br/>
+            Endereco: <input type="endereco" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem=""v-model="endereco" /><br /><br/>
+	        Metros Quadrados Terreno: <input type="metrosTerreno" titulo="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" id="" v-model="metrosTerreno" /><br /><br />
+            Metros Quadrados Contruidos: <input type="metrosContruido" titulo="" id="" metrosTerreno="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="metrosContruido" /><br /><br />
+            Quantidade de Quartos: <input type="quantQuartos" titulo="" id="" metrosTerreno="" metrosContruido="" quantBanheiros="" quantGaragem="" v-model="quantQuartos" /><br /><br />
+            Quantidade de Banheiros: <input type="quantBanheiros" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantGaragem="" v-model="quantBanheiros" /><br /><br />
+            Quantidade de Garagens: <input type="quantGaragem" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" v-model="quantGaragem" /><br /><br />
+            Preço: <input type="preco" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="preco" /><br /><br />
+ 
+            <button @click="fetchProducts">Buscar todos os Imóveis</button><br /><br />
+            <button @click="fetchProductById">Buscar Imóveis por ID</button><br /><br />
+            <button @click="fetchProductByName">Buscar Imóveis por Nome</button><br /><br />
+            <button @click="postProduct">Postar Imóvel (Post)</button><br /><br />
+            <button @click="putProduct">Atulizar dado em Imóvel (Put)</button><br /><br />
+            <button @click="deleteProductById">Deletar Imóvel</button><br /><br />
+ 
+            <p>{{ properties }}</p>
+ 
+            <ul>
+                <li v-for="properties in properties" :key="properties.id">
+                    <h4>{{ properties.id }}</h4>
+                    <p>{{ properties.titulo }}</p>
+                    <p>{{ properties.endereco }}</p>
+                    <p>{{ properties.metrosTerreno }}</p>
+                    <p>{{ properties.metrosContruido }}</p>
+                    <p>{{ properties.quantQuartos }}</p>
+                    <p>{{ properties.quantBanheiros }}</p>
+                    <p>{{ properties.quantGaragem }}</p>
+                    <p>{{ properties.preco }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+ 
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                id: 0,
+                titulo: "",
+                endereco: "",
+                metrosTerreno: "",
+                metrosContruido: "",
+                quantQuartos: "",
+                quantBanheiros: "",
+                quantGaragem: "",
+                preco: "",
+                properties: {},
+                properties: [],
+                baseURI: "http://localhost:8080/apiRest/api/properties",
+            },
+            methods: {
+                fetchProducts: function () {
+                    axios.get(this.baseURI).then((result) => {
+                        this.properties = result.data;
+                    });
+                },
+                fetchProductById: function () {
+                    axios
+                        .get(this.baseURI + "/" + this.id)
+                        .then((result) => {
+                            this.properties = result.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                fetchProductByName: function () {
+                    axios
+                        .get(this.baseURI + "/search?titulo=" + this.titulo)
+                        .then((result) => {
+                            this.properties = result.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                postProduct: function () {
+                    let obj = {
+                        titulo: this.titulo,
+                        endereco: this.endereco,
+                        metrosContruido: this.metrosContruido,
+                        metrosTerreno: this.metrosTerreno,
+                        quantBanheiros: this.quantBanheiros,
+                        quantGaragem: this.quantGaragem,
+                        quantQuartos: this.quantQuartos,
+                        preco: parseFloat(this.preco),
+                    };
+ 
+                    axios.post(this.baseURI, new URLSearchParams(obj), {
+                        'Content-Type': 'application/x-www-form-urlencoded;'
+                    }).then((result) => {
+                        this.properties = result.data;
+                    });
+                },
+                putProduct: function () {
+                    let obj = {
+                        titulo: this.titulo,
+                        endereco: this.endereco,
+                        metrosContruido: this.metrosContruido,
+                        metrosTerreno: this.metrosTerreno,
+                        quantBanheiros: this.quantBanheiros,
+                        quantGaragem: this.quantGaragem,
+                        quantQuartos: this.quantQuartos,
+                        preco: parseFloat(this.preco),
+                    };
+ 
+                    axios.put(this.baseURI + "/" + this.id, new URLSearchParams(obj), {
+                        'Content-Type': 'application/x-www-form-urlencoded;'
+                    }).then((result) => {
+                        this.properties = result.data;
+                    });
+                },
+                deleteProductById: function () {
+                    axios.delete(this.baseURI + "/" + this.id).then((result) => {
+                        console.log(result.status);
+                    });
+                },
+            },
+        });
+    </script>
+ 
+</body>
+ 
+</html>

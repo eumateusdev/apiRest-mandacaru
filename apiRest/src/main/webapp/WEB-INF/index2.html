@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@2.7.7/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+ 
+<body>
+ 
+    
+    <div id="app">
+        <div>
+        									
+            ID do Imóvel: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="id" /><br /><br/>
+            Titulo: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem=""v-model="name" /><br /><br/>
+	        Metros Quadrados Terreno: <input type="text" titulo="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" id="" v-model="metrosTerreno" /><br /><br />
+            Metros Quadrados Contruidos: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="metrosContruido" /><br /><br />
+            Quantidade de Quartos: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="quantQuartos" /><br /><br />
+            Quantidade de Banheiros: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="quantBanheiros" /><br /><br />
+            Quantidade de Garagens: <input type="text" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="quantGaragem" /><br /><br />
+            Preço:
+            <input type="preco" titulo="" id="" metrosTerreno="" metrosContruido="" quantQuartos="" quantBanheiros="" quantGaragem="" v-model="preco" /><br /><br />
+ 
+            <button @click="fetchProducts">Buscar todos os Imóveis</button><br /><br />
+            <button @click="fetchProductById">Buscar Imóveis por ID</button><br /><br />
+            <button @click="fetchProductByName">Buscar Imóveis por Nome</button><br /><br />
+            <button @click="postProduct">Postar Imóvel (Post)</button><br /><br />
+            <button @click="putProduct">Atulizar dado em Imóvel (Put)</button><br /><br />
+            <button @click="deleteProductById">Deletar Imóvel</button><br /><br />
+ 
+            <p>{{ propertyrent }}</p>
+ 
+            <ul>
+                <li v-for="propertyrent in properties" :key="propertyrent.id">
+                    <h4>{{ propertyrent.id }}</h4>
+                    <p>{{ propertyrent.titulo }}</p>
+                    <p>{{ propertyrent.endereco }}</p>
+                    <p>{{ propertyrent.metrosTerreno }}</p>
+                    <p>{{ propertyrent.metrosContruido }}</p>
+                    <p>{{ propertyrent.quantQuartos }}</p>
+                    <p>{{ propertyrent.quantBanheiros }}</p>
+                    <p>{{ propertyrent.quantGaragem }}</p>
+                    <p>{{ propertyrent.preco }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+ 
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                id: 0,
+                name: "",
+                price: "",
+                product: {},
+                products: [],
+                baseURI: "http://localhost:8080/mandacaru3/api/products",
+            },
+            methods: {
+                fetchProducts: function () {
+                    axios.get(this.baseURI).then((result) => {
+                        this.products = result.data;
+                    });
+                },
+                fetchProductById: function () {
+                    axios
+                        .get(this.baseURI + "/" + this.id)
+                        .then((result) => {
+                            this.product = result.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                fetchProductByName: function () {
+                    axios
+                        .get(this.baseURI + "/search?name=" + this.name)
+                        .then((result) => {
+                            this.product = result.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+                postProduct: function () {
+                    let obj = {
+                        name: this.name,
+                        price: parseFloat(this.price),
+                    };
+ 
+                    axios.post(this.baseURI, new URLSearchParams(obj), {
+                        'Content-Type': 'application/x-www-form-urlencoded;'
+                    }).then((result) => {
+                        this.product = result.data;
+                    });
+                },
+                putProduct: function () {
+                    let obj = {
+                        name: this.name,
+                        price: parseFloat(this.price),
+                    };
+ 
+                    axios.put(this.baseURI + "/" + this.id, new URLSearchParams(obj), {
+                        'Content-Type': 'application/x-www-form-urlencoded;'
+                    }).then((result) => {
+                        this.product = result.data;
+                    });
+                },
+                deleteProductById: function () {
+                    axios.delete(this.baseURI + "/" + this.id).then((result) => {
+                        console.log(result.status);
+                    });
+                },
+            },
+        });
+    </script>
+ 
+</body>
+ 
+</html>
